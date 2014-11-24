@@ -110,44 +110,46 @@
 								</p>
 						</div>
 
+						<div ng-show="net">
 
-						<div ng-hide="eventsrc" class="text-center">
-							<p>
-								<button style="font-size:2em;" ng-click="connect()" class="btn btn-large btn-success">Connect!</button>
-							</p>
-						</div>
+							<div ng-hide="eventsrc" class="text-center">
+								<p>
+									<button style="font-size:2em;" ng-click="connect()" class="btn btn-large btn-success">Connect!</button>
+								</p>
+								</div>
 
-						<div ng-show="eventsrc" class="text-center container">
-							<p>
-								<button style="font-size:2em;" ng-click="disconnect()" class="btn btn-large btn-danger">Disconnect :(</button>
-							</p>
+							<div ng-show="eventsrc" class="text-center container">
+								<p>
+									<button style="font-size:2em;" ng-click="disconnect()" class="btn btn-large btn-danger">Disconnect :(</button>
+								</p>
 
-							<div class="col-xs-6">
-								<div>
-										<div class="progress progress-vertical progress-striped active progress-success">
+								<div class="col-xs-6">
+									<div>
+											<div class="progress progress-vertical progress-striped active progress-success">
 											<div class="progress-bar progress-bar-danger" style="margin-top: {{Math.abs(100-util[players[0]]) * 2.3}}px"></div>
-										</div>
+											</div>
+									</div>
+
+									<h3>Player #1</h3>
+
 								</div>
 
-								<h3>Player #1</h3>
+								<div class="col-xs-6">
+									<div>
+											<div class="progress progress-vertical progress-striped active">
+												<div class="progress-bar progress-bar-info" style="margin-top: {{Math.abs(100-util[players[1]]) * 2.3}}px"></div>
+											</div>
+									</div>
 
-							</div>
-
-							<div class="col-xs-6">
-								<div>
-										<div class="progress progress-vertical progress-striped active">
-											<div class="progress-bar progress-bar-info" style="margin-top: {{Math.abs(100-util[players[1]]) * 2.3}}px"></div>
-										</div>
+									<h3>Player #2</h3>
 								</div>
-
-								<h3>Player #2</h3>
 							</div>
 						</div>
 
 						<hr />
 
 
-						<div class="row">
+						<div ng-show="net" class="row">
 							<div class="container">
 								<div class="button col-xs-4">
 									<a ng-click="forward()"><span class="glyphicon glyphicon-arrow-up">&nbsp;</span> Forward</a>
