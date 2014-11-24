@@ -45,6 +45,13 @@ angular.module('CarControl', ['tmCloudClient', 'angular-loading-bar'], function(
          });
       };
 
+		$scope.reset = function(dev) {
+			new tmMsg({"proto/tm": {
+				"type": "command",
+			 	"command": "force_reset",
+		 	}}).$create({network: $scope.net.key, device: dev});
+		};
+
 		$scope.connect = function(mapping) {
 			// for demo lights
 			var mapping = {
@@ -65,6 +72,10 @@ angular.module('CarControl', ['tmCloudClient', 'angular-loading-bar'], function(
 				"qM109ONk0": 0
 			};
 
+			var i = 1;
+			$scope.reset($scope.players[0]);
+			$scope.reset($scope.players[1]);
+
 			$scope.eventsrc = tmMsgStreamQuery({network: $scope.net.key, authorization: auth});
 			$scope.eventsrc.addEventListener('msg', function(e) {
 				var data = JSON.parse(e.data);
@@ -76,17 +87,31 @@ angular.module('CarControl', ['tmCloudClient', 'angular-loading-bar'], function(
 
 				if (data['proto/tm'] && 'ima' === data['proto/tm'].detail) {
 					$scope.$apply(function() {
-						 var prev = $scope.state[data.selector[1]],
-							  diff = data['proto/tm'].data - prev;
-						 console.log(prev, data['proto/tm'].data, diff, (diff / 100) * 100);
-						 $scope.state[data.selector[1]] = data['proto/tm'].data;
-						 $scope.util[data.selector[1]] = (diff/ 100) * 100;
+						var prev = $scope.state[data.selector[1]],
+							 diff = data['proto/tm'].data - prev;
+						$scope.state[data.selector[1]] = data['proto/tm'].data;
+						$scope.util[data.selector[1]] = (diff/ 100) * 100;
+
+						if (0 === i++ % 2) {
+							if ($scope.util[$scope.players[0]] > $scope.util[$scope.players[1]]) {
+								$scope.message = "Player #1 Moves ahead!!!!!";
+								$scope.forward();
+							} else if ($scope.util[$scope.players[0]] < $scope.util[$scope.players[1]]) {
+								$scope.message = "Player #2 WINS!!!!!";
+								$scope.backward();
+							} else {
+								$scope.message = "It's a tie!!!";
+								$scope.stop();
+							}
+
+						}
 					});
 				}
 			});
 		};
 
 		$scope.disconnect = function() {
+			$scope.stop();
 			$scope.eventsrc.close();
 			delete $scope.eventsrc;
 		};
@@ -130,17 +155,22 @@ angular.module('CarControl', ['tmCloudClient', 'angular-loading-bar'], function(
 		};
 
 		$scope.backward = function() {
-			$scope.setGPIOs($scope.net.key, $scope.car, {"gpio_0": true, "gpio_1": false})
+			$scope.setGPIOs($scope.net.key, $scope.car, {"gpio_0": true, "gpio_1": false, "gpio_6":false})
 			setTimeout(function(){
-				$scope.setGPIOs($scope.net.key, $scope.car, {"gpio_0": false, "gpio_1": false})
-			}, 50);
+				$scope.stop(true);
+			}, 00);
 		};
 
 		$scope.forward = function() {
-			$scope.setGPIOs($scope.net.key, $scope.car, {"gpio_0": false, "gpio_1": true})
+			$scope.setGPIOs($scope.net.key, $scope.car, {"gpio_0": false, "gpio_1": true, "gpio_6":false})
 			setTimeout(function(){
-				$scope.setGPIOs($scope.net.key, $scope.car, {"gpio_0": false, "gpio_1": false})
-			}, 50);
+				$scope.stop(true);
+			}, 00);
+		};
+
+		$scope.stop = function(t) {
+			t = undefined === t ? true : t;
+			$scope.setGPIOs($scope.net.key, $scope.car, {"gpio_0": t, "gpio_1": t, "gpio_6":true})
 		};
 
    })
