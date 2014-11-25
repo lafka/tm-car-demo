@@ -130,7 +130,10 @@ angular.module('CarControl', ['tmCloudClient', 'angular-loading-bar'], function(
                "gpio_1": {"config": 4},
                "gpio_4": {"config": 1, trigger: 2},
                "gpio_6": {"config": 4},
-               "gpio_7": {"config": 3}
+               "gpio_7": {"config": 3},
+               "device": {
+               	"command_ack": 0
+               }
             }
            };
 
